@@ -4,7 +4,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import todo
 from django.contrib.auth.decorators import login_required
-# Create your views here.
 
 @login_required
 def home(request):
@@ -14,9 +13,7 @@ def home(request):
         new_todo.save()
 
     all_todos = todo.objects.filter(user=request.user)
-    context = {
-        'todos': all_todos
-    }
+    context = {'todos': all_todos}
     return render(request, 'todoapp/todo.html', context)
 
 def register(request):
@@ -31,9 +28,8 @@ def register(request):
             messages.error(request, 'Password must be at least 3 characters')
             return redirect('register')
 
-        get_all_users_by_username = User.objects.filter(username=username)
-        if get_all_users_by_username:
-            messages.error(request, 'Error, username already exists, User another.')
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Error, username already exists, use another.')
             return redirect('register')
 
         new_user = User.objects.create_user(username=username, email=email, password=password)
@@ -41,7 +37,7 @@ def register(request):
 
         messages.success(request, 'User successfully created, login now')
         return redirect('login')
-    return render(request, 'todoapp/register.html', {})
+    return render(request, 'todoapp/register.html')
 
 def LogoutView(request):
     logout(request)
@@ -62,8 +58,7 @@ def loginpage(request):
             messages.error(request, 'Error, wrong user details or user does not exist')
             return redirect('login')
 
-
-    return render(request, 'todoapp/login.html', {})
+    return render(request, 'todoapp/login.html')
 
 @login_required
 def DeleteTask(request, name):
